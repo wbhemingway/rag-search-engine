@@ -1,20 +1,26 @@
+from .inverted_index import InvertedIndex
 from .search_utils import (
     DEFAULT_SEARCH_LIMIT,
-    load_movies,
-    preprocess_text,
-    token_match,
     tokenize,
 )
 
 
 def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
-    movies = load_movies()
+    index = InvertedIndex()
+    index.load()
     results = []
-    for movie in movies:
-        if token_match(
-            tokenize(preprocess_text(query)), tokenize(preprocess_text(movie["title"]))
-        ):
-            results.append(movie)
+    tokens = tokenize(query)
+    for token in tokens:
+        doc_set = index.get_documents(token)
+        for id in doc_set:
+            id = int(id)
+            results.append((id, index.docmap[id]["title"]))
             if len(results) == limit:
-                break
+                return results
     return results
+
+
+def build_command() -> None:
+    index = InvertedIndex()
+    index.build()
+    index.save()

@@ -7,6 +7,9 @@ from nltk.stem import PorterStemmer
 DEFAULT_SEARCH_LIMIT = 5
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
+INDEX_PATH = os.path.join(CACHE_DIR, "index.pkl")
+DOCMAP_PATH = os.path.join(CACHE_DIR, "docmap.pkl")
 DATA_PATH = os.path.join(PROJECT_ROOT, "data", "movies.json")
 
 
@@ -24,6 +27,7 @@ def preprocess_text(text: str) -> str:
 
 def tokenize(text: str) -> list[str]:
     stop_words = load_stop_words()
+    text = preprocess_text(text)
     tokens = text.split()
     tokens = [token for token in tokens if token not in stop_words]
     stemmer = PorterStemmer()
