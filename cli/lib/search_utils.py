@@ -10,6 +10,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
 INDEX_PATH = os.path.join(CACHE_DIR, "index.pkl")
 DOCMAP_PATH = os.path.join(CACHE_DIR, "docmap.pkl")
+TERMF_PATH = os.path.join(CACHE_DIR, "term_frequencies.pkl")
 DATA_PATH = os.path.join(PROJECT_ROOT, "data", "movies.json")
 
 
