@@ -1,6 +1,7 @@
 import os
 from collections import Counter
 from pickle import dump, load
+from typing import Any
 
 from .search_utils import (
     CACHE_DIR,
@@ -13,10 +14,10 @@ from .search_utils import (
 
 
 class InvertedIndex:
-    def __init__(self):
+    def __init__(self) -> None:
         self.index: dict[str, set[int]] = {}
-        self.docmap: dict[int, dict] = {}
-        self.term_frequecies: dict[int, Counter] = {}
+        self.docmap: dict[int, dict[str, Any]] = {}
+        self.term_frequecies: dict[int, Counter[str]] = {}
 
     def __add_doc(self, doc_id: int, text: str) -> None:
         tokens = tokenize(text)

@@ -5,10 +5,12 @@ from .search_utils import (
 )
 
 
-def search_command(query: str, limit: int = DEFAULT_SEARCH_LIMIT) -> list[dict]:
+def search_command(
+    query: str, limit: int = DEFAULT_SEARCH_LIMIT
+) -> list[tuple[int, str]]:
     index = InvertedIndex()
     index.load()
-    results = []
+    results: list[tuple[int, str]] = []
     tokens = tokenize(query)
     for token in tokens:
         doc_set = index.get_documents(token)

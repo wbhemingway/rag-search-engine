@@ -1,6 +1,7 @@
+from typing import Any, cast
 import json
 
-def load_movies() -> dict[str, str]:
+def load_movies() -> dict[str, Any]:
     path = "data/movies.json"
     with open(path, "r") as f:
-        return json.loads(f.read())
+        return cast(dict[str, Any], json.loads(f.read()))

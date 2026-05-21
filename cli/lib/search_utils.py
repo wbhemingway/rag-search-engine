@@ -1,23 +1,24 @@
+from typing import Any, cast
 import json
 import os
 import string
 
 from nltk.stem import PorterStemmer
 
-DEFAULT_SEARCH_LIMIT = 5
+DEFAULT_SEARCH_LIMIT: int = 5
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
-INDEX_PATH = os.path.join(CACHE_DIR, "index.pkl")
-DOCMAP_PATH = os.path.join(CACHE_DIR, "docmap.pkl")
-TERMF_PATH = os.path.join(CACHE_DIR, "term_frequencies.pkl")
-DATA_PATH = os.path.join(PROJECT_ROOT, "data", "movies.json")
+PROJECT_ROOT: str = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+CACHE_DIR: str = os.path.join(PROJECT_ROOT, "cache")
+INDEX_PATH: str = os.path.join(CACHE_DIR, "index.pkl")
+DOCMAP_PATH: str = os.path.join(CACHE_DIR, "docmap.pkl")
+TERMF_PATH: str = os.path.join(CACHE_DIR, "term_frequencies.pkl")
+DATA_PATH: str = os.path.join(PROJECT_ROOT, "data", "movies.json")
 
 
-def load_movies() -> list[dict]:
+def load_movies() -> list[dict[str, Any]]:
     with open(DATA_PATH, "r") as f:
         data = json.load(f)
-    return data["movies"]
+    return cast(list[dict[str, Any]], data["movies"])
 
 
 def preprocess_text(text: str) -> str:

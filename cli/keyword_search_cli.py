@@ -11,7 +11,7 @@ def main() -> None:
     search_parser = subparsers.add_parser("search", help="Search movies using BM25")
     search_parser.add_argument("query", type=str, help="Search query")
 
-    build_parser = subparsers.add_parser("build", help="Build invterted index")
+    build_parser = subparsers.add_parser("build", help="Build invterted index")  # noqa: F841
 
     tf_parser = subparsers.add_parser("tf", help="Get term frequency")
     tf_parser.add_argument("doc_id", type=int, help="Document id")
