@@ -43,3 +43,9 @@ def token_match(search_terms: list[str], targets: list[str]) -> bool:
 def load_stop_words() -> list[str]:
     with open(os.path.join(PROJECT_ROOT, "data", "stopwords.txt"), "r") as f:
         return list(f.read().splitlines())
+
+def enforced_tokenize(text: str) -> list[str]:
+    token = tokenize(text)
+    if len(token) != 1:
+        raise Exception("Term must be a single token")
+    return token

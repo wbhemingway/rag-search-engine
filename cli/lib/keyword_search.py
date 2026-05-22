@@ -32,3 +32,15 @@ def tf_command(doc_id: int, term: str) -> int:
     index = InvertedIndex()
     index.load()
     return index.get_tf(doc_id, term)
+
+
+def idf_command(term: str) -> float:
+    index = InvertedIndex()
+    index.load()
+    return index.get_idf(term)
+
+
+def tfidf_command(doc_id: int, term: str) -> float:
+    index = InvertedIndex()
+    index.load()
+    return index.get_tfidf(doc_id, term)

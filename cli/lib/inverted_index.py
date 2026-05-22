@@ -1,5 +1,6 @@
 import os
 from collections import Counter
+from math import log
 from pickle import dump, load
 from typing import Any
 
@@ -8,6 +9,7 @@ from .search_utils import (
     DOCMAP_PATH,
     INDEX_PATH,
     TERMF_PATH,
+    enforced_tokenize,
     load_movies,
     tokenize,
 )
@@ -34,10 +36,17 @@ class InvertedIndex:
         return sorted(list(doc_set))
 
     def get_tf(self, doc_id: int, term: str) -> int:
-        token = tokenize(term)
-        if len(token) != 1:
-            raise Exception("Term must be a single token")
+        token = enforced_tokenize(term)
         return self.term_frequecies.get(doc_id, Counter()).get(token[0], 0)
+
+    def get_idf(self, term: str) -> float:
+        doc_count = len(self.docmap)
+        token = enforced_tokenize(term)
+        term_count = len(self.get_documents(token[0]))
+        return log((doc_count + 1) / (term_count + 1))
+
+    def get_tfidf(self, doc_id: int, term: str) -> float:
+        return self.get_tf(doc_id, term) * self.get_idf(term)
 
     def build(self) -> None:
         movies = load_movies()

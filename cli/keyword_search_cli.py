@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 import argparse
 
-from lib.keyword_search import build_command, search_command, tf_command
+from lib.keyword_search import (
+    build_command,
+    idf_command,
+    search_command,
+    tf_command,
+    tfidf_command,
+)
 
 
 def main() -> None:
@@ -17,6 +23,13 @@ def main() -> None:
     tf_parser.add_argument("doc_id", type=int, help="Document id")
     tf_parser.add_argument("term", type=str, help="Term")
 
+    idf_parser = subparsers.add_parser("idf", help="Get inverse document frequency")
+    idf_parser.add_argument("term", type=str, help="Term")
+
+    tfidf_parser = subparsers.add_parser("tfidf", help="Get the combined TF-IDF score")
+    tfidf_parser.add_argument("doc_id", type=int, help="Id of movie")
+    tfidf_parser.add_argument("term", type=str, help="Term")
+
     args = parser.parse_args()
 
     match args.command:
@@ -29,6 +42,12 @@ def main() -> None:
         case "tf":
             tf = tf_command(args.doc_id, args.term)
             print(tf)
+        case "idf":
+            idf = idf_command(args.term)
+            print(f"Inverse document frequency of '{args.term}': {idf:.2f}")
+        case "tfidf":
+            tf_idf = tfidf_command(args.doc_id, args.term)
+            print(f"TF-IDF of '{args.term}' in document {args.doc_id}: {tf_idf:.2f}")
         case _:
             parser.print_help()
 
