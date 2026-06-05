@@ -2,7 +2,11 @@
 
 import argparse
 
-from lib.hybrid_search import normalize_scores, weighted_search_command
+from lib.hybrid_search import (
+    normalize_scores,
+    rrf_search_command,
+    weighted_search_command,
+)
 
 
 def main() -> None:
@@ -25,6 +29,20 @@ def main() -> None:
         help="Weight for BM25 vs semantic (0=all semantic, 1=all BM25, default=0.5)",
     )
     weighted_search_parser.add_argument(
+        "--limit", type=int, default=5, help="Number of results to return (default=5)"
+    )
+
+    rrf_search_parser = subparsers.add_parser(
+        "rrf-search", help="Perform RRF hybrid search"
+    )
+    rrf_search_parser.add_argument("query", type=str, help="Search query")
+    rrf_search_parser.add_argument(
+        "--k",
+        type=int,
+        default=60,
+        help="RRF parameter k (default=60)",
+    )
+    rrf_search_parser.add_argument(
         "--limit", type=int, default=5, help="Number of results to return (default=5)"
     )
 
@@ -51,6 +69,21 @@ def main() -> None:
                     print(
                         f"   BM25: {metadata['bm25_score']:.3f}, Semantic: {metadata['semantic_score']:.3f}"
                     )
+                print(f"   {res['document'][:100]}...")
+                print()
+        case "rrf-search":
+            result = rrf_search_command(args.query, args.k, args.limit)
+            print(f"RRF Search Results for '{args.query}' (k={args.k})")
+            for i, res in enumerate(result, 1):
+                print(f"{i}. {res['title']}")
+                print(f"   RRF Score: {res.get('score', 0):.3f}")
+                ranks = []
+                if res.get("bm25_rank") is not None:
+                    ranks.append(f"BM25 Rank: {res['bm25_rank']}")
+                if res.get("semantic_rank") is not None:
+                    ranks.append(f"Semantic Rank: {res['semantic_rank']}")
+                if ranks:
+                    print(f"   {', '.join(ranks)}")
                 print(f"   {res['document'][:100]}...")
                 print()
         case _:
