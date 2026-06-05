@@ -16,7 +16,6 @@ class SearchResult(TypedDict):
     score: float
     metadata: dict[str, Any]
 
-
 class GoldenTestCase(TypedDict):
     query: str
     relevant_docs: list[str]
@@ -47,6 +46,8 @@ CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
 DEFAULT_CHUNK_SIZE = 200
 DEFAULT_CHUNK_OVERLAP = 1
 DEFAULT_SEMANTIC_CHUNK_SIZE = 4
+DEFAULT_LIMIT_MULTIPLIER = 500
+DEFAULT_ALPHA = 0.5
 
 MOVIE_EMBEDDINGS_PATH = os.path.join(CACHE_DIR, "movie_embeddings.npy")
 CHUNK_EMBEDDINGS_PATH = os.path.join(CACHE_DIR, "chunk_embeddings.npy")
