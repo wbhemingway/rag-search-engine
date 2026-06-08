@@ -13,3 +13,4 @@ wheels/
 /data/
 /cache/
 /.mypy_cache/
+.env
