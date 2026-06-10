@@ -1,13 +1,15 @@
 import os
-from typing import Optional
+from typing import Literal, Optional
 
 from .keyword_search import InvertedIndex
 from .query_enhancement import enhance_query
+from .reranking import rerank
 from .search_utils import (
     DEFAULT_ALPHA,
     DEFAULT_K,
     DEFAULT_LIMIT_MULTIPLIER,
     DEFAULT_SEARCH_LIMIT,
+    SEARCH_MULTIPLIER,
     Movie,
     SearchResult,
     load_movies,
@@ -193,9 +195,10 @@ def combine_search_results_rrf(
 def rrf_search_command(
     query: str,
     k: int = DEFAULT_K,
-    enhance: Optional[str] = None,
+    enhance: Literal["spell", "expand", "rewrite"] | None = None,
+    rerank_method: Literal["individual"] | None = None,
     limit: int = DEFAULT_SEARCH_LIMIT,
-) -> dict:
+) -> dict[str, object]:
     movies = load_movies()
     searcher = HybridSearch(movies)
 
@@ -205,12 +208,18 @@ def rrf_search_command(
         enhanced_query = enhance_query(query, method=enhance)
         query = enhanced_query
 
-    search_limit = limit
+    search_limit = limit * SEARCH_MULTIPLIER if rerank_method else limit
     results = searcher.rrf_search(query, k, search_limit)
+
+    reranked = rerank_method is None
+    if reranked:
+        results = rerank(query, results, method=rerank_method, limit=limit)
     return {
         "original_query": original_query,
         "enhanced_query": enhanced_query,
         "enhance_method": enhance,
+        "reranked": reranked,
+        "reranking_method": rerank_method,
         "query": query,
         "k": k,
         "results": results,
