@@ -1,10 +1,11 @@
 import json
 import os
 from time import sleep
-from typing import Literal, Optional
+from typing import Literal, Optional, cast
 
 from dotenv import load_dotenv
 from google import genai
+from sentence_transformers import CrossEncoder
 
 from .search_utils import SearchResult
 
@@ -92,6 +93,26 @@ def llm_rerank_batch(
             reranked.append({**doc_map[doc_id], "batch_rank": i + 1})
 
     return reranked[:limit]
+
+
+def llm_rerank_cross_encoder(
+    query: str, documents: list[SearchResult], limit: int = 5
+) -> list[SearchResult]:
+    pairs = [
+        [query, f"{doc.get('title', '')} - {doc.get('document', '')}"]
+        for doc in documents
+    ]
+
+    cross_encoder = CrossEncoder("cross-encoder/ms-marco-TinyBERT-L2-v2")
+    scores = cross_encoder.predict(pairs)
+
+    scored_docs = cast(
+        list[SearchResult],
+        [{**doc, "cross_encode_score": score} for doc, score in zip(documents, scores)],
+    )
+    return sorted(scored_docs, key=lambda x: x["cross_encode_score"], reverse=True)[
+        :limit
+    ]
 
 
 def rerank(

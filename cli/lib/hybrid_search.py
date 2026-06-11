@@ -22,7 +22,7 @@ class RRFSearchCommandResult(TypedDict):
     enhanced_query: Optional[str]
     enhance_method: Optional[Literal["spell", "expand", "rewrite"]]
     reranked: bool
-    reranking_method: Optional[Literal["individual", "batch"]]
+    reranking_method: Optional[Literal["individual", "batch", "cross_encoder"]]
     query: str
     k: int
     results: list[SearchResult]
