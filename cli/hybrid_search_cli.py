@@ -54,8 +54,8 @@ def main() -> None:
     rrf_search_parser.add_argument(
         "--rerank-method",
         type=str,
-        choices=["individual"],
-        help="Rerank methods"
+        choices=["individual", "batch"],
+        help="Rerank methods",
     )
 
     args = parser.parse_args()
@@ -84,7 +84,9 @@ def main() -> None:
                 print(f"   {res['document'][:100]}...")
                 print()
         case "rrf-search":
-            result = rrf_search_command(args.query, args.k, args.enhance, args.rerank_method, args.limit)
+            result = rrf_search_command(
+                args.query, args.k, args.enhance, args.rerank_method, args.limit
+            )
 
             if result["enhanced_query"]:
                 print(
@@ -95,7 +97,9 @@ def main() -> None:
             )
 
             if result["reranked"]:
-                print(f"Re-ranking top {len(result['results'])} results using {result['reranking_method']}")
+                print(
+                    f"Re-ranking top {len(result['results'])} results using {result['reranking_method']}"
+                )
 
             for i, res in enumerate(result["results"], 1):
                 print(f"{i}. {res['title']}")
