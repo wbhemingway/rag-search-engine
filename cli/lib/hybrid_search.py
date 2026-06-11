@@ -209,7 +209,7 @@ def rrf_search_command(
     query: str,
     k: int = DEFAULT_K,
     enhance: Optional[Literal["spell", "expand", "rewrite"]] = None,
-    rerank_method: Optional[Literal["individual", "batch"]] = None,
+    rerank_method: Optional[Literal["individual", "batch", "cross_encoder"]] = None,
     limit: int = DEFAULT_SEARCH_LIMIT,
 ) -> RRFSearchCommandResult:
     movies = load_movies()

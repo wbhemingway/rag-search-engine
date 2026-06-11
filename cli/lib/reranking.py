@@ -97,11 +97,15 @@ def llm_rerank_batch(
 def rerank(
     query: str,
     documents: list[SearchResult],
-    method: Optional[Literal["individual", "batch"]] = "batch",
+    method: Optional[Literal["individual", "batch", "cross_encoder"]] = "batch",
     limit: int = 5,
 ) -> list[SearchResult]:
     match method:
         case "individual":
             return llm_rerank_individual(query, documents, limit)
+        case "batch":
+            return llm_rerank_batch(query, documents, limit)
+        case "cross_encoder":
+            return llm_rerank_cross_encoder(query, documents, limit)
         case _:
             return documents[:limit]
