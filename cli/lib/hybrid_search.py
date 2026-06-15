@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Literal, Optional, TypedDict
 
@@ -15,6 +16,13 @@ from .search_utils import (
     load_movies,
 )
 from .semantic_search import ChunkedSemanticSearch
+
+logger = logging.getLogger(__name__)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+logging.getLogger("transformers").setLevel(logging.WARNING)
+logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+logging.basicConfig(filename="rrf_search_command.log", level=logging.INFO)
 
 
 class RRFSearchCommandResult(TypedDict):
@@ -214,19 +222,21 @@ def rrf_search_command(
 ) -> RRFSearchCommandResult:
     movies = load_movies()
     searcher = HybridSearch(movies)
-
     original_query = query
+    logger.info(f"Original query: {original_query}")
     enhanced_query = None
     if enhance:
         enhanced_query = enhance_query(query, method=enhance)
         query = enhanced_query
+        logger.info(f"Enhanced query: {enhanced_query}")
 
     search_limit = limit * SEARCH_MULTIPLIER if rerank_method else limit
     results = searcher.rrf_search(query, k, search_limit)
-
-    reranked = rerank_method is None
+    logger.info(f"Search results: {[res['title'] for res in results]}")
+    reranked = rerank_method is not None
     if reranked:
         results = rerank(query, results, method=rerank_method, limit=limit)
+        logger.info(f"Reranked results: {[res['title'] for res in results]}")
     return {
         "original_query": original_query,
         "enhanced_query": enhanced_query,
