@@ -196,6 +196,7 @@ def combine_search_results_rrf(
         doc_id = result["id"]
         if doc_id not in rrf_scores:
             rrf_scores[doc_id] = {
+                "id": doc_id,
                 "title": result["title"],
                 "document": result["document"],
                 "bm2f_rank": None,

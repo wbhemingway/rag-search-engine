@@ -131,8 +131,8 @@ def main() -> None:
                     search_results,
                 )
 
-                for i, (result, eval) in enumerate(zip(search_results, evals), 1):
-                    print(f"{i}. {result['title']}: {eval}/3")
+                for i, (res, eval) in enumerate(zip(search_results, evals), 1):
+                    print(f"{i}. {res['title']}: {eval}/3")
                 print()
 
         case _:
