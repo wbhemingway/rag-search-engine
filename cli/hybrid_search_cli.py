@@ -2,11 +2,13 @@
 
 import argparse
 
+from lib.evaluation import llm_judge_results
 from lib.hybrid_search import (
     normalize_scores,
     rrf_search_command,
     weighted_search_command,
 )
+from lib.search_utils import SearchResult
 
 
 def main() -> None:
@@ -56,6 +58,9 @@ def main() -> None:
         type=str,
         choices=["individual", "batch", "cross_encoder"],
         help="Rerank methods",
+    )
+    rrf_search_parser.add_argument(
+        "--evaluate", action="store_true", help="Evaluate the given responses"
     )
 
     args = parser.parse_args()
@@ -116,6 +121,20 @@ def main() -> None:
                     print(f"   {', '.join(ranks)}")
                 print(f"   {res['document'][:100]}...")
                 print()
+
+            search_results: list[SearchResult] = result["results"]
+            if args.evaluate:
+                evals = llm_judge_results(
+                    result["enhanced_query"]
+                    if result["enhanced_query"]
+                    else result["query"],
+                    search_results,
+                )
+
+                for i, (result, eval) in enumerate(zip(search_results, evals), 1):
+                    print(f"{i}. {result['title']}: {eval}/3")
+                print()
+
         case _:
             parser.print_help()
 
