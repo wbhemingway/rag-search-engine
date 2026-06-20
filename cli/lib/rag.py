@@ -70,19 +70,24 @@ def citations_command(query: str, limit: int) -> dict:
     searcher = HybridSearch(movies)
 
     results = searcher.rrf_search(query, DEFAULT_K, limit)
-    prompt = f"""Provide information useful to the query below by synthesizing data from multiple search results in detail.
+    prompt = f"""Answer the query below and give information based on the provided documents.
 
-    The goal is to provide comprehensive information so that users know what their options are.
-    Your response should be information-dense and concise, with several key pieces of information about the genre, plot, etc. of each movie.
-
-    This should be tailored to Hoopla users. Hoopla is a movie streaming service.
+    The answer should be tailored to users of Hoopla, a movie streaming service.
+    If not enough information is available to provide a good answer, say so, but give the best answer possible while citing the sources available.
 
     Query: {query}
 
-    Search results:
+    Documents:
     {"\n".join([f"{result.get('title', '')} - {result.get('document', '')[:200]}" for result in results])}
 
-    Provide a comprehensive 3–4 sentence answer that combines information from multiple sources:"""
+    Instructions:
+    - Provide a comprehensive answer that addresses the query
+    - Cite sources in the format [1], [2], etc. when referencing information
+    - If sources disagree, mention the different viewpoints
+    - If the answer isn't in the provided documents, say "I don't have enough information"
+    - Be direct and informative
+
+    Answer:"""
 
     response = client.models.generate_content(model=model, contents=prompt)
     citations = (response.text or "").strip()
