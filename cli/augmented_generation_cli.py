@@ -1,6 +1,6 @@
 import argparse
 
-from lib.rag import citations_command, question_command, rag_command, summarize_command
+from lib.augmented_generation import citations_command, question_command, rag_command, summarize_command
 
 
 def main() -> None:
