@@ -93,3 +93,30 @@ def citations_command(query: str, limit: int) -> dict:
     citations = (response.text or "").strip()
 
     return {"query": query, "results": results, "citations": citations}
+
+
+def question_command(query: str, limit: int) -> dict:
+    movies = load_movies()
+    searcher = HybridSearch(movies)
+
+    results = searcher.rrf_search(query, DEFAULT_K, limit)
+    prompt = f"""Answer the user's question based on the provided movies that are available on Hoopla, a streaming service.
+
+    Question: {query}
+
+    Documents:
+    {"\n".join([f"{result.get('title', '')} - {result.get('document', '')}" for result in results])}
+
+
+    Instructions:
+    - Answer questions directly and concisely
+    - Be casual and conversational
+    - Don't be cringe or hype-y
+    - Talk like a normal person would in a chat conversation
+
+    Answer:"""
+
+    response = client.models.generate_content(model=model, contents=prompt)
+    answer = (response.text or "").strip()
+
+    return {"query": query, "results": results, "answer": answer}

@@ -1,6 +1,6 @@
 import argparse
 
-from lib.rag import rag_command, summarize_command, citations_command
+from lib.rag import citations_command, question_command, rag_command, summarize_command
 
 
 def main() -> None:
@@ -25,6 +25,14 @@ def main() -> None:
     )
     citations_parser.add_argument("query", type=str, help="Search query for RAG")
     citations_parser.add_argument(
+        "--limit", type=int, default=5, help="Maximum number of results to cite"
+    )
+
+    question_parser = subparsers.add_parser(
+        "question", help="Get a response with citations"
+    )
+    question_parser.add_argument("query", type=str, help="Search query for RAG")
+    question_parser.add_argument(
         "--limit", type=int, default=5, help="Maximum number of results to cite"
     )
 
@@ -61,6 +69,16 @@ def main() -> None:
             print()
             print("LLM Answer")
             print(result["citations"])
+        case "question":
+            query = args.query
+            result = question_command(query, args.limit)
+            results = result["results"]
+            print("Search Results:")
+            for res in results:
+                print(f"- {res['title']}")
+            print()
+            print("LLM Answer")
+            print(result["answer"])
         case _:
             parser.print_help()
 
