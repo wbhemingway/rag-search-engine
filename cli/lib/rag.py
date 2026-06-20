@@ -63,3 +63,28 @@ def summarize_command(query: str, limit: int) -> dict:
     summary = (response.text or "").strip()
 
     return {"query": query, "results": results, "summary": summary}
+
+
+def citations_command(query: str, limit: int) -> dict:
+    movies = load_movies()
+    searcher = HybridSearch(movies)
+
+    results = searcher.rrf_search(query, DEFAULT_K, limit)
+    prompt = f"""Provide information useful to the query below by synthesizing data from multiple search results in detail.
+
+    The goal is to provide comprehensive information so that users know what their options are.
+    Your response should be information-dense and concise, with several key pieces of information about the genre, plot, etc. of each movie.
+
+    This should be tailored to Hoopla users. Hoopla is a movie streaming service.
+
+    Query: {query}
+
+    Search results:
+    {"\n".join([f"{result.get('title', '')} - {result.get('document', '')[:200]}" for result in results])}
+
+    Provide a comprehensive 3–4 sentence answer that combines information from multiple sources:"""
+
+    response = client.models.generate_content(model=model, contents=prompt)
+    citations = (response.text or "").strip()
+
+    return {"query": query, "results": results, "citations": citations}
